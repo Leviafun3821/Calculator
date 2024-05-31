@@ -1,54 +1,44 @@
 import java.util.Scanner;
 
 public class Lesson {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int result;
-        char operator;
-
-        System.out.print("Введите данные в формате \"Число1 - выражение - Число2 и нажмите Enter\": ");
-        String input = scanner.nextLine(); // Получаем всю строку без разделения
-
-        try {
-            String[] parts = input.split(" ");
-
-            if (parts.length > 3) {
-                System.out.println("Ошибка формата! Через пробел - два числа и один оператор (+, -, *, /)");
-                return;
+    public static void main(String[] args) throws Exception {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Введите два числа (между ними математическое выражение) и нажмите ENTER: ");
+            String expression = scanner.nextLine();
+            try {
+                System.out.println(parse(expression));
+            }catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                System.out.println("Ошибка! В вашем примере допущено неверное выражение");
             }
+        }
 
-            int number1 = Integer.parseInt(parts[0]); // Первое число
-            operator = parts[1].charAt(0); // Оператор
-            int number2 = Integer.parseInt(parts[2]); // Второе число
+        public static String parse (String expression) throws Exception {
+            int num1, num2;
+            String oper, result;
+            String[] operands = expression.split("[+\\-*/]");
+            if(operands.length == 3) throw new Exception("Ошибка! Должно быть два операнда и математическое выражение");
+            oper = detectOperation(expression);
+            if(oper == null) throw new Exception("Ошибка, неподдерживаемая математическая операция");
+            num1 = Integer.parseInt(operands[0]);
+            num2 = Integer.parseInt(operands[1]);
+            if (num1 < 1 || num1 > 10 || num2 < 1 || num2 > 10) throw new Exception("Числа должны быть от 1 до 10");
+            int arabian = calc(num1, num2, oper);
+            result = String.valueOf(arabian);
+            return result;
+        }
 
-            // Проверяем, что числа находятся в диапазоне от 1 до 10
-            if (number1 < 1 || number1 > 10 || number2 < 1 || number2 > 10) {
-                System.out.println("Ошибка! Числа должны быть в диапазоне от 1 до 10.");
-                return;
-            }
+        static String detectOperation(String expression) {
+            if(expression.contains("+")) return "+";
+            else if (expression.contains("-")) return "-";
+            else if (expression.contains("*")) return "*";
+            else if (expression.contains("/")) return "/";
+            else return null;
+        }
 
-            switch (operator) {
-                case '+':
-                    result = number1 + number2;
-                    break;
-                case '-':
-                    result = number1 - number2;
-                    break;
-                case '*':
-                    result = number1 * number2;
-                    break;
-                case '/':
-                        result = number1 / number2;
-                    break;
-                default:
-                    System.out.println("Ошибка! Введена неверная арифметическая операция.");
-                    return;
-            }
-            System.out.println("Результат: " + result);
-        } catch (NumberFormatException e) {
-            System.out.println("Ошибка! Неверный формат ввода. Через пробел: число-оператор-число и Enter");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Ошибка - данный формат не является математической операцией.");
+        static int calc (int a, int b, String oper) {
+            if(oper.equals("+")) return a + b;
+            else if (oper.equals("-")) return a - b;
+            else if (oper.equals("*")) return a * b;
+            else return a / b;
         }
     }
-}
